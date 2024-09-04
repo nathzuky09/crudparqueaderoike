@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+ <!--Crear funcionarios-->
+<main class="container mt-5">
+    <h1 class="text-center mb-4">Creación de Funcionario y Vehículo</h1>
+
+    <form method="POST" class="card card-body mx-auto" style="max-width: 600px;">
+        {% csrf_token %}
+        
+        <div class="mb-4">
+            <h2 class="text-center">Funcionario</h2>
+            {{ funcionario_form.as_p }}
+        </div>
+
+        <div class="mb-4">
+            <h2 class="text-center">Vehículo</h2>
+            {{ vehiculo_form.as_p }}
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+    </form>
+</main>
+
+{% endblock %}
+

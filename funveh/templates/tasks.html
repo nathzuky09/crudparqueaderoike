@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="container mt-5">
+    <!-- Lista de Funcionarios -->
+    <div class="mb-4">
+        <h1 class="text-center">Lista de Funcionarios</h1>
+        <ul class="list-group">
+            {% for funcionario in funcionarios %}
+                <li class="list-group-item">
+                    <a href="{% url 'update_funcionario' funcionario.id %}">{{ funcionario.nombre }}</a>
+                </li>
+            {% empty %}
+                <li class="list-group-item">No hay funcionarios registrados.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Lista de Vehículos -->
+    <div class="mb-4">
+        <h1 class="text-center">Lista de Vehículos</h1>
+        <ul class="list-group">
+            {% for vehiculo in vehiculos %}
+                <li class="list-group-item">
+                    <strong>Placa:</strong> {{ vehiculo.placa }}<br>
+                    <strong>Color:</strong> {{ vehiculo.color }}<br>
+                    <strong>Modelo:</strong> {{ vehiculo.modelo }}<br>
+                    <strong>Tipo de Vehículo:</strong> {{ vehiculo.tipoVehiculo }}<br>
+                    {% if vehiculo.funcionario %}
+                        <strong>Propietario:</strong> {{ vehiculo.funcionario.nombre }} {{ vehiculo.funcionario.apellido }}<br>
+                    {% else %}
+                        <strong>Propietario:</strong> Sin propietario<br>
+                    {% endif %}
+                    <strong>Hora de Entrada:</strong> {{ vehiculo.hora_entrada|date:"H:i" }}<br>
+                    <strong>Hora de Salida:</strong> {% if vehiculo.hora_salida %}{{ vehiculo.hora_salida|date:"H:i" }}{% else %}Sin salida{% endif %}<br>
+                </li>
+            {% empty %}
+                <li class="list-group-item">No hay vehículos registrados.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Botón para crear una nueva tarea -->
+    <div class="text-center">
+        <form action="{% url 'create_task' %}" method="get">
+            <button type="submit" class="btn btn-primary">Crear Nueva Tarea</button>
+        </form>
+    </div>
+</main>
+
+
+{% endblock %}
+
+
+
+
