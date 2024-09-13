@@ -15,10 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from funveh import views
 from django.conf.urls.static import static
-
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,5 +30,6 @@ urlpatterns = [
     path('tasks/create/', views.create_task, name='create_task'),
     path('tasks/<int:task_id>/', views.task_detail, name='task'), 
     path('funcionario/<int:pk>/edit/', views.update_funcionario, name='update_funcionario'),
-]
+    path('', views.home, name='home'),
+]  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

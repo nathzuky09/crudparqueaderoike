@@ -8,30 +8,33 @@ from .models import Funcionario, Vehiculo
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from .forms import FuncionarioForm, VehiculoFormSet
-
+from django.views.generic import TemplateView
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
 
 # vistas del proyecto 
 
-#Home
+from django.views.generic import TemplateView
+
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'index.html')  # Asegúrate de que este archivo sea el generado por React
+
 #Registro
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+
 def signup(request):
-    if request.method == 'GET':
-        return render(request, 'signup.html', {
-            'form': UserCreationForm()
-        })
-    else:
+    if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('tasks')
-        else:
-            return render(request, 'signup.html', {
-                'form': form,
-                'error': 'Formulario de registro no válido'
-            })
+            form.save()
+            return redirect('login')  # Redirige a la página de inicio de sesión
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'signup.html', {'form': form})
+
 
 #Control panel
 def tasks(request):
@@ -45,8 +48,11 @@ def tasks(request):
         'vehiculos': vehiculos
     })
 
-
 #Crear registros para la base de datos
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import FuncionarioForm, VehiculoForm
+
 def create_task(request):
     if request.method == 'GET':
         # Crea instancias vacías de los formularios para mostrarlas en la plantilla
@@ -63,16 +69,31 @@ def create_task(request):
         vehiculo_form = VehiculoForm(request.POST)
         
         if funcionario_form.is_valid() and vehiculo_form.is_valid():
+            # Guardar el formulario de Funcionario
             funcionario = funcionario_form.save()
+            
+            # Guardar el formulario de Vehículo
             vehiculo = vehiculo_form.save(commit=False)
             vehiculo.funcionario = funcionario
             vehiculo.save()
+
+            # Mensaje de éxito
+            messages.success(request, 'Funcionario y Vehículo creados exitosamente.')
             return redirect('tasks')  # Redirige a la vista deseada después de guardar los datos
         else:
+            # Agregar mensajes de error para cada formulario
+            for field, errors in funcionario_form.errors.as_data().items():
+                for error in errors:
+                    messages.error(request, f"Error en {field}: {error.message}")
+
+            for field, errors in vehiculo_form.errors.as_data().items():
+                for error in errors:
+                    messages.error(request, f"Error en {field}: {error.message}")
+
+            # Renderizar de nuevo la plantilla con los formularios y errores
             return render(request, 'create_task.html', {
                 'funcionario_form': funcionario_form,
                 'vehiculo_form': vehiculo_form,
-                'error': 'Formulario no válido'
             })
 
 

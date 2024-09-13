@@ -1,35 +1,87 @@
+<!-- signup.html -->
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-
-
-    <!--Inicio de sesion-->
-<main class="container">
+<main class="container mt-5">
     <div class="row justify-content-center">
-        <section class="col-md-4 mt-5">
-            <form action="{% url 'inicio_sesion' %}" method="POST" class="card-body">
-                <h1 class="text-center">Inicia sesión</h1>
-                {{ error }}
-                
-                {% csrf_token %}
-                
-                <div class="mb-3">
-                    <label for="username" class="form-label">Nombre de usuario:</label>
-                    <input type="text" class="form-control" name="username" id="username" placeholder="Escribe tu usuario">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0" style="background-color: #f8f9fa;">
+                <div class="card-body p-4">
+                    <h1 class="card-title text-center mb-4" style="color: #343a40;">Iniciar Sesión</h1>
+                    
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label" style="color: #495057;">Nombre de usuario</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="username"
+                                name="username"
+                                placeholder="Escribe tu nombre de usuario"
+                                required
+                                style="border-color: #ced4da; background-color: #ffffff;"
+                            />
+                            <div class="invalid-feedback">
+                                Por favor, ingresa tu nombre de usuario.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label" style="color: #495057;">Contraseña</label>
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="password"
+                                name="password"
+                                placeholder="Escribe tu contraseña"
+                                required
+                                style="border-color: #ced4da; background-color: #ffffff;"
+                            />
+                            <div class="invalid-feedback">
+                                Por favor, ingresa tu contraseña.
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100" style="background-color: #007bff; border: none;">
+                            Iniciar Sesión
+                        </button>
+                    </form>
                 </div>
-                
-                <div class="mb-3">
-                    <label for="password" class="form-label">Contraseña:</label>
-                    <input type="password" class="form-control" name="password" id="password" placeholder="Escribe tu contraseña">
-                </div>
-                
-                <button type="submit" class="btn btn-primary btn-block">
-                    Inicia sesión
-                </button>
-            </form>
-        </section>
+            </div>
+        </div>
     </div>
 </main>
 
+<!-- Agregar script para la validación del formulario -->
+<script>
+    (function () {
+        'use strict';
 
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation');
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+    })();
+</script>
 {% endblock %}
+
+

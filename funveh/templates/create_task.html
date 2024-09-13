@@ -1,30 +1,48 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-
- <!--Crear funcionarios-->
 <main class="container mt-5">
-    <h1 class="text-center mb-4">Creación de Funcionario y Vehículo</h1>
+    <!-- Crear funcionarios y vehículos -->
+    <div class="card mx-auto" style="max-width: 700px;">
+        <div class="card-body">
+            <h1 class="card-title text-center mb-4">Creación de Funcionario y Vehículo</h1>
 
-    <form method="POST" class="card card-body mx-auto" style="max-width: 600px;">
-        {% csrf_token %}
-        
-        <div class="mb-4">
-            <h2 class="text-center">Funcionario</h2>
-            {{ funcionario_form.as_p }}
-        </div>
+            <form method="POST">
+                {% csrf_token %}
 
-        <div class="mb-4">
-            <h2 class="text-center">Vehículo</h2>
-            {{ vehiculo_form.as_p }}
-        </div>
+                <!-- Funcionario -->
+                <div class="mb-4">
+                    <h2 class="h4 text-center">Funcionario</h2>
+                    <div class="d-flex flex-column align-items-center">
+                        {{ funcionario_form.as_p }}
+                    </div>
+                </div>
 
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary">Guardar</button>
+                <!-- Vehículo -->
+                <div class="mb-4">
+                    <h2 class="h4 text-center">Vehículo</h2>
+                    <div class="d-flex flex-column align-items-center">
+                        {{ vehiculo_form.as_p }}
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </main>
 
+{% endblock %}
+
+{% block footer %}
+<!-- Footer -->
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container text-center">
+        <p class="mb-0">© 2024 IkeParking. Todos los derechos reservados.</p>
+        <p class="mb-0">Desarrollado por [Tu Nombre]</p>
+    </div>
+</footer>
 {% endblock %}
 
