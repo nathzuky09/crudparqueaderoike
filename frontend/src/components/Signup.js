@@ -22,15 +22,7 @@ const SignupForm = () => {
       setError('Las contraseñas no coinciden');
       return;
     }
-    
-    // Aquí iría la lógica para enviar los datos al backend
-    // const response = await fetch('/signup/', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(formData),
-    // });
-    // const result = await response.json();
-    // console.log(result);
+  
   };
   
   return (

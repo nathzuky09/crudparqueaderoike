@@ -11,6 +11,7 @@ from .forms import FuncionarioForm, VehiculoFormSet
 from django.views.generic import TemplateView
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.utils import timezone
 
 # vistas del proyecto 
 
@@ -38,19 +39,32 @@ def signup(request):
 
 #Control panel
 def tasks(request):
-    # Obtén todos los funcionarios y vehículos de la base de datos
+    # Obtener los funcionarios y vehículos
     funcionarios = Funcionario.objects.all()
     vehiculos = Vehiculo.objects.all()
-    
-    # Pasa la lista de funcionarios y vehículos al contexto de la plantilla
+
+    # Calcular fecha y ID de aprobación si aún no existen
+    for funcionario in funcionarios:
+        if not funcionario.fecha_aprobacion:
+            funcionario.fecha_aprobacion = timezone.now()
+            funcionario.aprobacion_id = funcionario.id  # O usa una lógica adecuada para generar el ID
+            funcionario.save()
+
+    # Renderizar la plantilla
     return render(request, 'tasks.html', {
         'funcionarios': funcionarios,
-        'vehiculos': vehiculos
+        'vehiculos': vehiculos,
+        'aprobado': request.session.get('aprobado', False),  # Asumiendo que esta variable se establece en alguna parte
     })
 
 #Crear registros para la base de datos
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from .forms import FuncionarioForm, VehiculoForm
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Funcionario, Vehiculo
 from .forms import FuncionarioForm, VehiculoForm
 
 def create_task(request):
@@ -74,12 +88,14 @@ def create_task(request):
             
             # Guardar el formulario de Vehículo
             vehiculo = vehiculo_form.save(commit=False)
-            vehiculo.funcionario = funcionario
+            vehiculo.funcionario = funcionario  # Asocia el vehículo con el funcionario creado
             vehiculo.save()
 
-            # Mensaje de éxito
-            messages.success(request, 'Funcionario y Vehículo creados exitosamente.')
-            return redirect('tasks')  # Redirige a la vista deseada después de guardar los datos
+            # Mensaje de éxito para aprobación de cupo
+            messages.success(request, 'Funcionario y Vehículo creados exitosamente. Aprobación de cupo aprobada.')
+
+            # Redirige a la vista de lista de tareas o donde desees mostrar los datos
+            return redirect('tasks')  
         else:
             # Agregar mensajes de error para cada formulario
             for field, errors in funcionario_form.errors.as_data().items():
@@ -95,6 +111,7 @@ def create_task(request):
                 'funcionario_form': funcionario_form,
                 'vehiculo_form': vehiculo_form,
             })
+
 
 
 #Detalle de la tarea

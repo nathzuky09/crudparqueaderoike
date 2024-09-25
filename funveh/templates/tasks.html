@@ -12,14 +12,23 @@
             </div>
             <div class="card-body">
                 {% if funcionarios %}
-                    <ul class="list-group list-group-flush">
-                        {% for funcionario in funcionarios %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="{% url 'update_funcionario' funcionario.id %}" class="text-decoration-none text-dark">{{ funcionario.nombre }}</a>
-                                <span class="badge bg-secondary">{{ funcionario.puesto }}</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                <ul class="list-group list-group-flush">
+                    {% for funcionario in funcionarios %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <a href="{% url 'update_funcionario' funcionario.id %}" class="text-decoration-none text-dark">{{ funcionario.nombre }}</a><br>
+                                <strong>ID de Aprobación:</strong> {{ funcionario.aprobacion_id }}<br>
+                                <strong>Fecha de Aprobación:</strong> 
+                                {% if funcionario.fecha_aprobacion %}
+                                    {{ funcionario.fecha_aprobacion|date:"d M Y" }}
+                                {% else %}
+                                    No aprobada
+                                {% endif %}
+                            </div>
+                            <span class="badge bg-secondary">{{ funcionario.puesto }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
                 {% else %}
                     <p class="text-center mb-0">No hay funcionarios registrados.</p>
                 {% endif %}
