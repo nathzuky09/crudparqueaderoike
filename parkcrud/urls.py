@@ -30,7 +30,7 @@ urlpatterns = [
     path('tasks/create/', views.create_task, name='create_task'),
     path('tasks/<int:task_id>/', views.task_detail, name='task'), 
     path('funcionario/<int:pk>/edit/', views.update_funcionario, name='update_funcionario'),
-    path('', views.home, name='home'),
-    path('api/', include('funveh.urls_api'))
-]  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('api/', include('funveh.urls_api'))  # Asegúrate de que esto esté correcto
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
 
