@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import modelformset_factory
-from .models import Vehiculo, Funcionario
+from .models import Vehiculo, Funcionario, MovimientoVehiculo
 
 class FuncionarioForm(forms.ModelForm):
     class Meta:
@@ -10,7 +10,7 @@ class FuncionarioForm(forms.ModelForm):
 class VehiculoForm(forms.ModelForm):
     class Meta:
         model = Vehiculo
-        fields = ['placa', 'color', 'modelo', 'tipoVehiculo', 'fecha_entrada', 'hora_entrada', 'fecha_salida', 'hora_salida']
+        fields = ['placa', 'color', 'modelo', 'tipoVehiculo', 'funcionario', 'fecha_entrada', 'hora_entrada', 'fecha_salida', 'hora_salida']
         widgets = {
             'fecha_entrada': forms.DateInput(attrs={'type': 'date'}),
             'hora_entrada': forms.TimeInput(attrs={'type': 'time'}),
@@ -26,11 +26,15 @@ VehiculoFormSet = modelformset_factory(
     can_delete=True  # Permite eliminar formularios
 )
 
-
-
-
-
-
+# Formulario para registrar movimientos de vehículo
+class MovimientoVehiculoForm(forms.ModelForm):
+    class Meta:
+        model = MovimientoVehiculo
+        fields = ['vehiculo', 'fecha_entrada', 'fecha_salida', 'tipo_movimiento', 'descripcion']
+        widgets = {
+            'fecha_entrada': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'fecha_salida': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
 
 
 

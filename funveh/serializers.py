@@ -1,7 +1,7 @@
 # miapp/serializers.py
 
 from rest_framework import serializers
-from .models import Funcionario, Vehiculo
+from .models import Funcionario, Vehiculo, MovimientoVehiculo
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
@@ -57,3 +57,10 @@ class UserLoginSerializer(serializers.Serializer):
             raise serializers.ValidationError('Ambos campos son obligatorios')
         
         return attrs
+
+
+class MovimientoVehiculoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovimientoVehiculo
+        fields = ['fecha_entrada', 'fecha_salida', 'vehiculo']
+            

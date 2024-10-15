@@ -136,6 +136,9 @@ os.path.join(BASE_DIR, 'frontend/build'),
 
 # Directorio para los archivos estáticos
 STATIC_URL = '/static/'
+if DEBUG:
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Directorio donde se encuentran los archivos estáticos recopilados

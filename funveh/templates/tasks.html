@@ -62,7 +62,11 @@
                                     </div>
                                     <div class="text-end">
                                         <strong>Hora de Entrada:</strong> {{ vehiculo.hora_entrada|date:"H:i" }}<br>
-                                        <strong>Hora de Salida:</strong> {% if vehiculo.hora_salida %}{{ vehiculo.hora_salida|date:"H:i" }}{% else %}Sin salida{% endif %}
+                                        <strong>Hora de Salida:</strong> {% if vehiculo.hora_salida %}{{ vehiculo.hora_salida|date:"H:i" }}{% else %}Sin salida{% endif %}<br>
+                                        <a href="{% url 'movimientos_vehiculo' vehiculo.id %}" class="btn btn-link">Ver Movimientos</a>
+
+                                        <!-- Botón para registrar movimiento -->
+                                        <a href="{% url 'registrar_movimiento' vehiculo.id %}" class="btn btn-primary btn-sm ms-2">Registrar Movimiento</a>
                                     </div>
                                 </div>
                             </li>
@@ -82,8 +86,4 @@
 </main>
 
 {% endblock %}
-
-
-
-
 
