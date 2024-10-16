@@ -7,6 +7,7 @@ urlpatterns = [
     path('vehiculos/', VehiculoListCreate.as_view(), name='vehiculo-list-create'),
     path('vehiculos/<int:pk>/', VehiculoDetail.as_view(), name='vehiculo-detail'),
     path('registro/', RegistroAPI.as_view(), name='registro'),  
+    path('registro/<int:id>/', RegistroAPI.as_view(), name='registro'),
     path('login/', LoginAPI.as_view(), name='login'), 
     path('vehiculo/<int:vehiculo_id>/movimientos/', ListaMovimientosAPI.as_view(), name='lista_movimientos_api'),
     path('vehiculo/<int:vehiculo_id>/movimientos/', ListaMovimientosAPI.as_view(), name='crear-movimiento-api'),
