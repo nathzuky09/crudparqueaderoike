@@ -1,8 +1,8 @@
 # miapp/views_api.py
 
-from rest_framework import generics
-from .models import Funcionario, Vehiculo, MovimientoVehiculo
-from .serializers import FuncionarioSerializer, VehiculoSerializer
+from rest_framework import generics, viewsets
+from .models import Funcionario, Vehiculo, MovimientoVehiculo, Cargo, Area, Aprobacion, TipoVehiculo
+from .serializers import FuncionarioSerializer, VehiculoSerializer, CargoSerializer, AreaSerializer, AprobacionSerializer, TipoVehiculoSerializer
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
@@ -10,6 +10,7 @@ from .serializers import UserRegisterSerializer, MovimientoVehiculoSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+ 
 
 
 class FuncionarioListCreate(generics.ListCreateAPIView):
@@ -28,7 +29,69 @@ class VehiculoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Vehiculo.objects.all()
     serializer_class = VehiculoSerializer
     
+class TipoVehiculoListCreate(generics.ListCreateAPIView):
+    queryset = TipoVehiculo.objects.all()
+    serializer_class = TipoVehiculoSerializer
 
+# Vista para detalles, actualizar y eliminar TipoVehiculo
+class TipoVehiculoDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = TipoVehiculo.objects.all()
+    serializer_class = TipoVehiculoSerializer
+
+class VehiculoViewSet(viewsets.ModelViewSet):
+    queryset = Vehiculo.objects.all()
+    serializer_class = VehiculoSerializer
+    
+class CargoListCreate(generics.ListCreateAPIView):
+    queryset = Cargo.objects.all()
+    serializer_class = CargoSerializer
+
+    # Este método manejará el POST (creación)
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+# Vista para manejar los detalles de un cargo específico (GET, PUT, DELETE)
+class CargoDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Cargo.objects.all()
+    serializer_class = CargoSerializer
+
+    # Este método manejará el PUT/PATCH (actualización)
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    # Este método manejará el DELETE (eliminación)
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+    
+class AreaListCreate(generics.ListCreateAPIView):
+    queryset = Area.objects.all()
+    serializer_class = AreaSerializer
+
+    # Este método manejará el POST (creación)
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+# Vista para manejar los detalles de un área específica (GET, PUT, DELETE)
+class AreaDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Area.objects.all()
+    serializer_class = AreaSerializer
+
+    # Este método manejará el PUT/PATCH (actualización)
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    # Este método manejará el DELETE (eliminación)
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+    
+class AprobacionListCreate(generics.ListCreateAPIView):
+    queryset = Aprobacion.objects.all()
+    serializer_class = AprobacionSerializer
+
+# Vista para obtener, actualizar y eliminar una aprobacion
+class AprobacionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Aprobacion.objects.all()
+    serializer_class = AprobacionSerializer
 
 from rest_framework.views import APIView
 from rest_framework.response import Response

@@ -24,6 +24,9 @@
                                 {% else %}
                                     No aprobada
                                 {% endif %}
+                                <br>
+                                <strong>Cargo:</strong> {{ funcionario.cargo.nombre }}<br>
+                                <strong>Área:</strong> {{ funcionario.area.nombre }}
                             </div>
                             <span class="badge bg-secondary">{{ funcionario.puesto }}</span>
                         </li>
@@ -86,4 +89,3 @@
 </main>
 
 {% endblock %}
-

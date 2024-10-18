@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
-from .forms import FuncionarioForm, VehiculoForm, MovimientoVehiculoForm  # Asegúrate de que MovimientoVehiculoForm esté importado
-from .models import Funcionario, Vehiculo, MovimientoVehiculo
+from .forms import FuncionarioForm, VehiculoForm, MovimientoVehiculoForm# Asegúrate de que MovimientoVehiculoForm esté importado
+from .models import Funcionario, Vehiculo, MovimientoVehiculo, Cargo, Area
 from django.contrib import messages
 from django.utils import timezone
 
@@ -27,64 +27,75 @@ def signup(request):
 
 # Control panel
 def tasks(request):
-    # Obtener los funcionarios y vehículos
+    # Obtener todos los funcionarios y vehículos
     funcionarios = Funcionario.objects.all()
     vehiculos = Vehiculo.objects.all()
 
-    # Calcular fecha y ID de aprobación si aún no existen
+    # Asignar fecha y ID de aprobación si aún no existen
     for funcionario in funcionarios:
-        if not funcionario.fecha_aprobacion:
+        if not funcionario.fecha_aprobacion:  # Si no tiene fecha de aprobación
             funcionario.fecha_aprobacion = timezone.now()
-            funcionario.aprobacion_id = funcionario.id  # O usa una lógica adecuada para generar el ID
             funcionario.save()
 
     # Registrar movimiento de vehículo
     if request.method == 'POST':
         movimiento_form = MovimientoVehiculoForm(request.POST)
         if movimiento_form.is_valid():
-            movimiento = movimiento_form.save()  # Guardar el movimiento en la base de datos
-            return redirect('tasks')  # Redirigir a la página de tareas después de guardar el movimiento
+            movimiento = movimiento_form.save(commit=False)
+            movimiento.save()  # Guardamos el movimiento en la base de datos
+            messages.success(request, 'Movimiento registrado exitosamente.')
+            return redirect('tasks')  # Redirigimos a la vista de tareas
     else:
-        movimiento_form = MovimientoVehiculoForm()
+        movimiento_form = MovimientoVehiculoForm()  # Formulario vacío para POST
 
-    # Renderizar la plantilla
+    # Obtener los cargos y áreas asociados a los funcionarios
+    cargos = Cargo.objects.all()
+    areas = Area.objects.all()
+
     return render(request, 'tasks.html', {
         'funcionarios': funcionarios,
         'vehiculos': vehiculos,
-        'movimiento_form': movimiento_form,  # Agregar el formulario a la plantilla
-        'aprobado': request.session.get('aprobado', False),
+        'cargos': cargos,  # Pasar los cargos al template
+        'areas': areas,    # Pasar las áreas al template
+        'movimiento_form': movimiento_form,
+    })
+
+
+
+# Vista para mostrar cargos y áreas (opcional)
+def list_cargos_areas(request):
+    cargos = Cargo.objects.all()
+    areas = Area.objects.all()
+    return render(request, 'list_cargos_areas.html', {
+        'cargos': cargos,
+        'areas': areas
     })
 
 # Crear registros para la base de datos
 def create_task(request):
-    if request.method == 'GET':
-        # Crea instancias vacías de los formularios para mostrarlas en la plantilla
-        funcionario_form = FuncionarioForm()
-        vehiculo_form = VehiculoForm()
-        
-        return render(request, 'create_task.html', {
-            'funcionario_form': funcionario_form,
-            'vehiculo_form': vehiculo_form
-        })
-    
-    elif request.method == 'POST':
+    if request.method == 'POST':
         funcionario_form = FuncionarioForm(request.POST)
         vehiculo_form = VehiculoForm(request.POST)
         
         if funcionario_form.is_valid() and vehiculo_form.is_valid():
             # Guardar el formulario de Funcionario
             funcionario = funcionario_form.save()
-            
+
+            # Si la fecha de aprobación está vacía, asignar la fecha actual
+            if not funcionario.fecha_aprobacion:
+                funcionario.fecha_aprobacion = timezone.now()
+                funcionario.save()
+
             # Guardar el formulario de Vehículo
             vehiculo = vehiculo_form.save(commit=False)
-            vehiculo.funcionario = funcionario  # Asocia el vehículo con el funcionario creado
+            vehiculo.funcionario = funcionario  # Asociar el vehículo con el funcionario
             vehiculo.save()
 
             messages.success(request, 'Funcionario y Vehículo creados exitosamente.')
+            return redirect('tasks')  # Redirigimos a la vista de tareas
 
-            return redirect('tasks')
         else:
-            # Agregar mensajes de error para cada formulario
+            # Manejo de errores si los formularios no son válidos
             for field, errors in funcionario_form.errors.as_data().items():
                 for error in errors:
                     messages.error(request, f"Error en {field}: {error.message}")
@@ -93,11 +104,15 @@ def create_task(request):
                 for error in errors:
                     messages.error(request, f"Error en {field}: {error.message}")
 
-            return render(request, 'create_task.html', {
-                'funcionario_form': funcionario_form,
-                'vehiculo_form': vehiculo_form,
-            })
+    else:
+        funcionario_form = FuncionarioForm()
+        vehiculo_form = VehiculoForm()
 
+    return render(request, 'create_task.html', {
+        'funcionario_form': funcionario_form,
+        'vehiculo_form': vehiculo_form,
+    })
+    
 # Movimientos del vehículo
 def mostrar_movimientos(request, vehiculo_id):
     vehiculo = get_object_or_404(Vehiculo, id=vehiculo_id)
@@ -118,24 +133,23 @@ from .forms import MovimientoVehiculoForm
 from .models import Vehiculo, MovimientoVehiculo
 
 def registrar_movimiento(request, id):
-    # Obtén el vehículo correspondiente con el id proporcionado
     vehiculo = get_object_or_404(Vehiculo, pk=id)
 
-    # Si el método de la solicitud es POST, procesamos el formulario
     if request.method == 'POST':
         form = MovimientoVehiculoForm(request.POST)
         if form.is_valid():
-            # Si el formulario es válido, creamos el objeto pero no lo guardamos aún
             movimiento = form.save(commit=False)
-            movimiento.vehiculo = vehiculo  # Asociamos el vehículo al movimiento
-            movimiento.save()  # Guardamos el movimiento en la base de datos
-            return redirect('tasks')  # Redirige a la vista de tareas (o lista de vehículos)
+            movimiento.vehiculo = vehiculo  # Asocia el vehículo al movimiento
+            movimiento.save()  # Guardamos el movimiento
+            messages.success(request, 'Movimiento registrado exitosamente.')
+            return redirect('tasks')
     else:
-        form = MovimientoVehiculoForm()  # Si no es POST, creamos un formulario vacío
+        form = MovimientoVehiculoForm()
 
-    # Renderiza el template con el formulario y el vehículo actual
-    return render(request, 'registrar_movimiento.html', {'form': form, 'vehiculo': vehiculo})
-
+    return render(request, 'registrar_movimiento.html', {
+        'form': form,
+        'vehiculo': vehiculo,
+    })
 
 
 def lista_movimientos(request, id):
@@ -161,24 +175,25 @@ def task_detail(request, task_id):
 def update_funcionario(request, pk):
     funcionario = get_object_or_404(Funcionario, pk=pk)
     vehiculos = Vehiculo.objects.filter(funcionario=funcionario)
-    
-    # Crear un formset para los vehículos
+
+    # Crear el formset para los vehículos
     VehiculoFormSet = modelformset_factory(Vehiculo, form=VehiculoForm, extra=0)
 
     if request.method == 'POST':
         funcionario_form = FuncionarioForm(request.POST, instance=funcionario)
         formset = VehiculoFormSet(request.POST, queryset=vehiculos)
-        
+
         if 'delete' in request.POST:
-            # Eliminar funcionario y vehículos asociados
+            # Eliminar funcionario y sus vehículos
             vehiculos.delete()
             funcionario.delete()
             messages.success(request, "Funcionario y vehículos eliminados exitosamente.")
             return redirect('tasks')
-        
+
         if funcionario_form.is_valid() and formset.is_valid():
             funcionario_form.save()
 
+            # Guardar los cambios en el formset de vehículos
             for form in formset:
                 if form.cleaned_data.get('DELETE'):
                     vehiculo = form.instance
@@ -194,9 +209,10 @@ def update_funcionario(request, pk):
 
     return render(request, 'update_funcionario.html', {
         'funcionario_form': funcionario_form,
-        'formset': formset
+        'formset': formset,
     })
-
+    
+    
 # Cerrar sesión
 def cerrar_sesion(request):
     logout(request)

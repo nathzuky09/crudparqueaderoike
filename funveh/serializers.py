@@ -1,10 +1,25 @@
 # miapp/serializers.py
 
 from rest_framework import serializers
-from .models import Funcionario, Vehiculo, MovimientoVehiculo
+from .models import Funcionario, Vehiculo, MovimientoVehiculo, Cargo, Area, Aprobacion, TipoVehiculo
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
+class AprobacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Aprobacion
+        fields = ['id', 'funcionario', 'aprobacion_id', 'fecha_aprobacion']
+
+class CargoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cargo
+        fields = '__all__'
+
+
+class AreaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Area
+        fields = '__all__'
 
 class FuncionarioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,6 +31,11 @@ class VehiculoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehiculo
         fields = '__all__'
+        
+class TipoVehiculoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TipoVehiculo
+        fields = ['id', 'nombre']       
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):

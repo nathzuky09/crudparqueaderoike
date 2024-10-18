@@ -1,16 +1,28 @@
 from django import forms
 from django.forms import modelformset_factory
-from .models import Vehiculo, Funcionario, MovimientoVehiculo
+from .models import Vehiculo, Funcionario, MovimientoVehiculo, Cargo, Area, Aprobacion
 
 class FuncionarioForm(forms.ModelForm):
     class Meta:
         model = Funcionario
-        fields = ['nombre', 'apellido', 'documento', 'numeroTelefono', 'email', 'cargo']
+        fields = ['nombre', 'apellido',  'documento' ,'numeroTelefono', 'email', 'cargo', 'area', 'fecha_aprobacion']
+
+    # Añadir un widget para el campo 'fecha_aprobacion'
+    fecha_aprobacion = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        required=False  # Hazlo no obligatorio si es necesario
+    )
+        
+        
+class AprobacionForm(forms.ModelForm):
+    class Meta:
+        model = Aprobacion
+        fields = ['aprobacion_id', 'fecha_aprobacion']  # Incluye solo los campos que necesitas
 
 class VehiculoForm(forms.ModelForm):
     class Meta:
         model = Vehiculo
-        fields = ['placa', 'color', 'modelo', 'tipoVehiculo', 'funcionario', 'fecha_entrada', 'hora_entrada', 'fecha_salida', 'hora_salida']
+        fields = ['placa', 'color', 'modelo', 'funcionario', 'fecha_entrada', 'hora_entrada', 'fecha_salida', 'hora_salida', 'tipo_vehiculo']
         widgets = {
             'fecha_entrada': forms.DateInput(attrs={'type': 'date'}),
             'hora_entrada': forms.TimeInput(attrs={'type': 'time'}),
@@ -38,7 +50,15 @@ class MovimientoVehiculoForm(forms.ModelForm):
 
 
 
+class CargoForm(forms.ModelForm):
+    class Meta:
+        model = Cargo
+        fields = ['nombre']
 
+class AreaForm(forms.ModelForm):
+    class Meta:
+        model = Area
+        fields = ['nombre']
 
 
 

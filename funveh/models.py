@@ -1,25 +1,50 @@
 from django.db import models
 from django.utils import timezone
 
+
+class Cargo(models.Model):
+    nombre = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nombre
+
+
+class Area(models.Model):
+    nombre = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nombre
+
+
 class Funcionario(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     documento = models.CharField(max_length=20)
     numeroTelefono = models.CharField(max_length=15)
     email = models.EmailField()
-    cargo = models.CharField(max_length=100, default='Sin especificar')
-    aprobacion_id = models.CharField(max_length=50, blank=True, null=True)
-    fecha_aprobacion = models.DateField(blank=True, null=True)
-    area = models.CharField(max_length=100, default='Sin especificar')
+    cargo = models.ForeignKey(Cargo, null=True, blank=True, on_delete=models.SET_NULL)
+    area = models.ForeignKey(Area, null=True, blank=True, on_delete=models.SET_NULL)
+    fecha_aprobacion = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellido}"
+    
+class Aprobacion(models.Model):
+    funcionario = models.OneToOneField(Funcionario, on_delete=models.CASCADE)  # Relación uno a uno
+    aprobacion_id = models.CharField(max_length=50, blank=True, null=True)
+    fecha_aprobacion = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Aprobación de {self.funcionario.nombre} {self.funcionario.apellido}"
 
 class Vehiculo(models.Model):
     placa = models.CharField(max_length=10)
     color = models.CharField(max_length=30)
     modelo = models.CharField(max_length=50)
-    tipoVehiculo = models.CharField(max_length=30)
+    tipo_vehiculo = models.ForeignKey('TipoVehiculo', null=True, blank=True, on_delete=models.SET_NULL)  # Relación con TipoVehiculo
     funcionario = models.ForeignKey('Funcionario', null=True, blank=True, on_delete=models.SET_NULL)
     fecha_entrada = models.DateField(default=timezone.now)
     hora_entrada = models.TimeField(default='00:00:00')
@@ -28,6 +53,12 @@ class Vehiculo(models.Model):
 
     def __str__(self):
         return self.placa
+
+class TipoVehiculo(models.Model):
+    nombre = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.nombre
 
 
 class MovimientoVehiculo(models.Model):
